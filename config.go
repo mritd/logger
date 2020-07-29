@@ -22,9 +22,9 @@ const (
 )
 
 const (
-	TimeEncoderISO8601 = "ios8601"
+	TimeEncoderISO8601 = "iso8601"
 	TimeEncoderMillis  = "millis"
-	TimeEncoderNanos   = "nanos"
+	TimeEncoderNanos   = "nano"
 	TimeEncoderEpoch   = "epoch"
 	TimeEncoderDefault = "default"
 )
@@ -85,6 +85,7 @@ func NewConfig(c ZapConfig) (*zapConfig, error) {
 		}
 		zc.stackLevel = lvl
 	}
+	zc.opts = append(zc.opts, zap.AddStacktrace(zc.stackLevel))
 
 	// If Encoder is set, override the default Encoder
 	if c.Encoder != "" {
