@@ -1,4 +1,4 @@
-package zaplogger
+package logger
 
 import "testing"
 

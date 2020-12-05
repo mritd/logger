@@ -1,4 +1,4 @@
-module github.com/mritd/zaplogger
+module github.com/mritd/logger
 
 go 1.15
 
