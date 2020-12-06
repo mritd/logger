@@ -65,6 +65,15 @@ func SetTimeEncoding(tec timeEncoding) {
 	logger = NewLogger(c).Sugar()
 }
 
+func SetDevelopment() {
+	config = &ZapConfig{
+		Development:  true,
+		TimeEncoding: TimeEncodingDefault,
+	}
+	c, _ := NewConfig(config)
+	logger = NewLogger(c).Sugar()
+}
+
 // Debug uses fmt.Sprint to construct and log a message.
 func Debug(args ...interface{}) {
 	logger.Debug(args...)
