@@ -2,40 +2,45 @@ package logger
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-const (
-	LevelDebug = "debug"
-	LevelInfo  = "info"
-	LevelWarn  = "warn"
-	LevelError = "error"
-)
+type level string
 
 const (
-	EncoderConsole = "console"
-	EncoderJSON    = "json"
+	LevelDebug level = "debug"
+	LevelInfo  level = "info"
+	LevelWarn  level = "warn"
+	LevelError level = "error"
 )
 
+type encoder string
+
 const (
-	TimeEncoderISO8601 = "iso8601"
-	TimeEncoderMillis  = "millis"
-	TimeEncoderNanos   = "nano"
-	TimeEncoderEpoch   = "epoch"
-	TimeEncoderDefault = "default"
+	EncoderConsole encoder = "console"
+	EncoderJSON    encoder = "json"
+)
+
+type timeEncoding string
+
+const (
+	TimeEncodingISO8601 timeEncoding = "iso8601"
+	TimeEncodingMillis  timeEncoding = "millis"
+	TimeEncodingNanos   timeEncoding = "nano"
+	TimeEncodingEpoch   timeEncoding = "epoch"
+	TimeEncodingDefault timeEncoding = "default"
 )
 
 type ZapConfig struct {
-	Development  bool   `json:"development,omitempty" yaml:"development,omitempty"`
-	Encoder      string `json:"encoder,omitempty" yaml:"encoder,omitempty"`
-	Level        string `json:"level,omitempty" yaml:"level,omitempty"`
-	StackLevel   string `json:"stack_level,omitempty" yaml:"stack_level,omitempty"`
-	Sample       bool   `json:"sample,omitempty" yaml:"sample,omitempty"`
-	TimeEncoding string `json:"time_encoding,omitempty" yaml:"time_encoding,omitempty"`
+	Development  bool         `json:"development,omitempty" yaml:"development,omitempty"`
+	Encoder      encoder      `json:"encoder,omitempty" yaml:"encoder,omitempty"`
+	Level        level        `json:"level,omitempty" yaml:"level,omitempty"`
+	StackLevel   level        `json:"stack_level,omitempty" yaml:"stack_level,omitempty"`
+	Sample       bool         `json:"sample,omitempty" yaml:"sample,omitempty"`
+	TimeEncoding timeEncoding `json:"time_encoding,omitempty" yaml:"time_encoding,omitempty"`
 }
 
 type zapConfig struct {
@@ -49,7 +54,7 @@ type zapConfig struct {
 type encoderConfigFunc func(*zapcore.EncoderConfig)
 type encoderFunc func(...encoderConfigFunc) zapcore.Encoder
 
-func NewConfig(c ZapConfig) (*zapConfig, error) {
+func NewConfig(c *ZapConfig) (*zapConfig, error) {
 	var zc zapConfig
 	var eFunc encoderFunc
 
@@ -105,7 +110,7 @@ func NewConfig(c ZapConfig) (*zapConfig, error) {
 		}
 		ecFuncs = append(ecFuncs, withTimeEncoding(tec))
 	} else {
-		tec, _ := getTimeEncoder(TimeEncoderDefault)
+		tec, _ := getTimeEncoder(TimeEncodingDefault)
 		ecFuncs = append(ecFuncs, withTimeEncoding(tec))
 	}
 	zc.encoder = eFunc(ecFuncs...)
@@ -118,10 +123,9 @@ func NewConfig(c ZapConfig) (*zapConfig, error) {
 	return &zc, nil
 }
 
-func getLevel(l string) (zapcore.Level, error) {
-	lower := strings.ToLower(l)
+func getLevel(l level) (zapcore.Level, error) {
 	var lvl zapcore.Level
-	switch lower {
+	switch l {
 	case LevelDebug:
 		lvl = zapcore.DebugLevel
 	case LevelInfo:
@@ -136,9 +140,8 @@ func getLevel(l string) (zapcore.Level, error) {
 	return lvl, nil
 }
 
-func getEncoder(ec string) (encoderFunc, error) {
-	lower := strings.ToLower(ec)
-	switch lower {
+func getEncoder(ec encoder) (encoderFunc, error) {
+	switch ec {
 	case EncoderConsole:
 		return func(ecfs ...encoderConfigFunc) zapcore.Encoder {
 			encoderConfig := zap.NewDevelopmentEncoderConfig()
@@ -160,18 +163,17 @@ func getEncoder(ec string) (encoderFunc, error) {
 	}
 }
 
-func getTimeEncoder(tec string) (zapcore.TimeEncoder, error) {
-	lower := strings.ToLower(tec)
-	switch lower {
-	case TimeEncoderISO8601:
+func getTimeEncoder(tec timeEncoding) (zapcore.TimeEncoder, error) {
+	switch tec {
+	case TimeEncodingISO8601:
 		return zapcore.ISO8601TimeEncoder, nil
-	case TimeEncoderMillis:
+	case TimeEncodingMillis:
 		return zapcore.EpochMillisTimeEncoder, nil
-	case TimeEncoderNanos:
+	case TimeEncodingNanos:
 		return zapcore.EpochNanosTimeEncoder, nil
-	case TimeEncoderEpoch:
+	case TimeEncodingEpoch:
 		return zapcore.EpochTimeEncoder, nil
-	case TimeEncoderDefault:
+	case TimeEncodingDefault:
 		return func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 			enc.AppendString(t.Format("2006-01-02 15:04:05"))
 		}, nil

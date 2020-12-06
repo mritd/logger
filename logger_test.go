@@ -10,13 +10,13 @@ func TestLogger(t *testing.T) {
 }
 
 func TestNewLogger(t *testing.T) {
-	zc, err := NewConfig(ZapConfig{
+	zc, err := NewConfig(&ZapConfig{
 		Development:  true,
 		Encoder:      EncoderConsole,
 		Level:        LevelDebug,
 		StackLevel:   LevelError,
 		Sample:       false,
-		TimeEncoding: TimeEncoderISO8601,
+		TimeEncoding: TimeEncodingISO8601,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -26,4 +26,10 @@ func TestNewLogger(t *testing.T) {
 	logger.Info("info")
 	logger.Warn("warn")
 	logger.Error("error")
+}
+
+func TestSetStackEncoder(t *testing.T) {
+	logger.Info("Test console log")
+	SetEncoder(EncoderJSON)
+	logger.Info("Test json log")
 }

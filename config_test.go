@@ -3,7 +3,7 @@ package logger
 import "testing"
 
 func TestNewConfig(t *testing.T) {
-	_, err := NewConfig(ZapConfig{
+	_, err := NewConfig(&ZapConfig{
 		Development:  true,
 		Encoder:      "json",
 		Level:        "debug",

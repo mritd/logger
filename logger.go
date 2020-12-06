@@ -2,12 +2,15 @@ package logger
 
 import (
 	"os"
+	"sync"
 	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
+var config *ZapConfig
+var configMux sync.Mutex
 var logger *zap.SugaredLogger
 
 func NewLogger(c *zapConfig) *zap.Logger {
@@ -22,12 +25,42 @@ func NewLogger(c *zapConfig) *zap.Logger {
 }
 
 func init() {
-	c, _ := NewConfig(ZapConfig{
+	config = &ZapConfig{
 		Encoder:      EncoderConsole,
 		Level:        LevelInfo,
-		StackLevel:   LevelError,
-		TimeEncoding: TimeEncoderDefault,
-	})
+		TimeEncoding: TimeEncodingDefault,
+	}
+	c, _ := NewConfig(config)
+	logger = NewLogger(c).Sugar()
+}
+
+func SetEncoder(ec encoder) {
+	configMux.Lock()
+	defer configMux.Unlock()
+	config.Encoder = ec
+	c, _ := NewConfig(config)
+	logger = NewLogger(c).Sugar()
+}
+
+func SetLevel(l level) {
+	configMux.Lock()
+	defer configMux.Unlock()
+	config.Level = l
+	c, _ := NewConfig(config)
+	logger = NewLogger(c).Sugar()
+}
+
+func SetStackLevel(l level) {
+	configMux.Lock()
+	defer configMux.Unlock()
+	config.StackLevel = l
+	c, _ := NewConfig(config)
+	logger = NewLogger(c).Sugar()
+}
+
+func SetTimeEncoding(tec timeEncoding) {
+	config.TimeEncoding = tec
+	c, _ := NewConfig(config)
 	logger = NewLogger(c).Sugar()
 }
 
