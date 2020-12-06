@@ -70,7 +70,6 @@ func NewConfig(c *ZapConfig) (*zapConfig, error) {
 		eFunc, _ = getEncoder(EncoderJSON)
 		zc.level = zap.NewAtomicLevelAt(zap.InfoLevel)
 		zc.sample = true
-		zc.stackLevel = zap.ErrorLevel
 	}
 
 	// If Level is set, override the default Level
