@@ -28,6 +28,7 @@ func init() {
 	config = &ZapConfig{
 		Encoder:      EncoderConsole,
 		Level:        LevelInfo,
+		StackLevel:   LevelPanic,
 		TimeEncoding: TimeEncodingDefault,
 	}
 	c, _ := NewConfig(config)

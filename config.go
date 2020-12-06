@@ -15,6 +15,7 @@ const (
 	LevelInfo  level = "info"
 	LevelWarn  level = "warn"
 	LevelError level = "error"
+	LevelPanic level = "panic"
 )
 
 type encoder string
@@ -133,6 +134,8 @@ func getLevel(l level) (zapcore.Level, error) {
 		lvl = zapcore.WarnLevel
 	case LevelError:
 		lvl = zapcore.ErrorLevel
+	case LevelPanic:
+		lvl = zapcore.PanicLevel
 	default:
 		return lvl, fmt.Errorf("invalid log level \"%s\"", l)
 	}
