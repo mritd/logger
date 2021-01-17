@@ -26,8 +26,14 @@ func TestNewLogger(t *testing.T) {
 	l.Warn("warn")
 }
 
-func TestSetStackEncoder(t *testing.T) {
+func TestSetEncoder(t *testing.T) {
 	logger.Info("Test console log")
 	SetEncoder(EncoderJSON)
 	logger.Info("Test json log")
+}
+
+func TestSetStackLevel(t *testing.T) {
+	logger.Info("Test stack level")
+	SetStackLevel(LevelInfo)
+	logger.Info("Test stack level")
 }
