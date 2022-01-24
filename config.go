@@ -150,6 +150,7 @@ func getEncoder(ec encoder) (encoderFunc, error) {
 			for _, f := range ecfs {
 				f(&encoderConfig)
 			}
+			encoderConfig.ConsoleSeparator = "    "
 			return zapcore.NewConsoleEncoder(encoderConfig)
 		}, nil
 	case EncoderJSON:
